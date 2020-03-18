@@ -1,8 +1,8 @@
 <p align="center">
-  <img alt="BE course logo" src="be.png" width="150">
+  <img alt="Project Tech Logo" src="pt.png" width="150">
 </p>
 
-<h1 align="center">Back-end Course @cmda-bt 19-20</h1>
+<h1 align="center">Project Tech Course @cmda-bt 19-20</h1>
 
 <p align="center"><b>HTMLovers brings code lovers together, since us programmers need some extra motivation to get out of our chair and adventure the real world, by and with love.</b>
 </p>
