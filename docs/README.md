@@ -27,7 +27,7 @@
 
 ## Introduction
 
-This dating web app is made as part of a (back-end) course from @cmda-bt 19-20. In this course I had to make a progressively enhanced dating app.
+This dating web app is made as part of a course from @cmda-bt 19-20. In this course I had to make a progressively enhanced dating app.
 
 You can find a live version of the dating app here: <a href="https://project-tech.herokuapp.com/">HTMLovers</a>
 
