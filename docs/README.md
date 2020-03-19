@@ -193,9 +193,9 @@ _When I'm on the dating website, I want to be able to create an account and get 
 
 ## Application
 
-HTMLovers is a server-side rendered dating web application. You can create an account, setup your information and match with other users based on the given information.
+HTMLovers is a [server-side rendered](https://www.freecodecamp.org/news/what-exactly-is-client-side-rendering-and-hows-it-different-from-server-side-rendering-bd5c786b340d/) dating web application. You can create an account, setup your information and match with other users based on the given information.
 
-HTMLovers is created using mainly HTML, SCSS, JavaScript, Nunjucks, NodeJS, Express and MongoDB.
+HTMLovers is created using mainly [HTML](https://developer.mozilla.org/nl/docs/Web/HTML), [SCSS](https://sass-lang.com/), [JavaScript](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/First_steps/What_is_JavaScript), [Nunjucks](https://mozilla.github.io/nunjucks/), [NodeJS](https://nodejs.org/en/), [Express](https://expressjs.com/) and [MongoDB](https://www.mongodb.com/).
 
 ### Templating
 
@@ -303,11 +303,127 @@ Now if we don't want to render a class, we can just leave it empty or not mentio
 
 **How does a component folder look like?**
 
-In my case it looks like this:
+In case of the notification folder in my project it looks like this:
 
+![Notification folder](notification.jpg)
 
+Inside the notification folder you can find the HTML, CSS (well ok, SASS) and JavaScript. 3 files that only belong to that given component.
 
-Building macros like this makes them reusable. You can reuse them anywere on your site, and also someone else that might start to code within your project. Heck, you can even use the component in different projects.
+Building components/macros like this makes them reusable. You can reuse them anywere on your site, and also someone else that might start to code within your project. Heck, you can even use the component in different projects.
+
+### Styling
+
+[SASS](https://sass-lang.com/) has been used for styling. It's full of features and actually makes your CSS richer. It's also faster to write SCSS than regular CSS, especially when working component based. The main reason for using SASS over other CSS extensions (or writing regular CSS) is the ability to write variables, functions, and mixins.
+
+Let's take a look again at the `notification` component. It has a SCSS file named _notification.scss. The underscore is a partial for SCSS. It basically means that the file is going to be imported to a `main` stylesheet, in my case `main.scss`. The advantage of using partials is that you can use many files to organize your code and everything will be compiled within a single file. Back to the notifcation..
+
+```SCSS
+$notification-transition-speed: 400ms;
+$notification-z-index: 10;
+$notification-shadow: 0 5px 10px rgba($color-black, 0.15);
+$notification-border-radius: 3px;
+$notification-background-color: $color-white;
+$notification-padding: $global-spacing-sm;
+$notification-margin: $global-spacing-md;
+$notification-width: $global-spacing * 40;
+$notification-color: $color-red;
+$notification-font: $font-stack-secondary;
+$notification-weight:  $font-weight-bold;
+
+.c-notification {
+  background-color: $notification-background-color;
+  border-radius: $notification-border-radius;
+  box-shadow: $notification-shadow;
+  padding: $notification-padding;
+  opacity: 0;
+  visibility: hidden;
+  position: fixed;
+  left: $notification-positioning;
+  max-width: 100%;
+  color: $notification-color;
+  font-weight:$notification-weight;
+  font-family: $notification-font;
+  margin-right: $notification-margin;
+
+  @include screen-tablet-portrait-and-bigger {
+    max-width: $notification-width;
+  }
+}
+
+.notification--is-active {
+  opacity: 1;
+  visibility: visible;
+  z-index: $notification-z-index;
+  transition: visibility $notification-transition-speed, opacity $notification-transition-speed;
+}
+```
+
+As you can see at the top of the files we define a lot of variables. We do this in order to make the component reusable within different projects. For instance, if you use this component within another project, the only thing (in most cases) you will have to do is give values to the variables on top. You don't have to touch the code beneath the variables.
+
+Variables like `$global-spacing` and `$color-red` are globally defined variables, that can be used in every SCSS file. Notice the `@include screen-tablet-portrait-and-bigger`? That's a @mixin that we defined globally. It looks like this:
+
+```SCSS
+@mixin screen-tablet-portrait-and-bigger {
+  @media only screen and (min-width: em($tablet-portrait-start)) {
+    @content;
+  }
+}
+```
+
+All SCSS files are eventually compiled to one css file, which is compressed, revisioned, and minified, on save or build. More about that later!
+
+### JavaScript
+I don't want to explain what JavaScript is, but I want to explain how I use JavaScript in this project. All JavaScript (files) being used are imported in a `main-es.js` file, like this:
+
+```JavaScript
+import FormLogin from '@components/form-login'
+import moduleInit from '@utilities/module-init'
+```
+
+I want to talk about the moduleInit, that's being imported. It's a script I didn't write myself, and I have no clue who actually wrote it. Someone from this company: [Dept](https://www.deptagency.com/nl-nl/), probably this guy: [The god of Webdevelopment](https://www.linkedin.com/in/adrianklingen/). Anyway, it reads the dom for elements. You can call it like this:
+
+```JavaScript
+moduleInit.sync('[js-hook-form-login]', FormLogin)
+```
+
+It will look for an element in the DOM with a data-attribute called `js-hook-form-login`. If an element has been found it will create a new Class, like: `new Class(FormLogin)`.
+
+In the `FormLogin` javascript file it will look like the code underneath. We can call the element directly from the constructor.
+
+```javascript
+class FormLogin {
+  constructor(element) {
+    this.form = element
+
+    this.bindEvents()
+  }
+
+  bindEvents() {
+    ...
+  }
+
+  ...
+}
+```
+
+Another note: all HTML element that contain some JavaScript actions are called by a data-attribute called js-hook followed by the name of the element. For instance, `js-hook-input-username`.
+
+In a JavaScript file at the top I will create a variable like this.
+
+```javascript
+const JS_HOOK_INPUT_USERNAME = '[js-hook-input-username]'
+```
+
+To be able to find the element I can now do something in the likes of this
+```javascript
+const inputUsername = document.querySelector(JS_HOOK_INPUT_USERNAME)
+
+// Maybe I'm calling a input inside a form that's been called by ModuleInit? 
+// We can find an element by adding the line underneath in the constructor.
+this.inputUsername = element.querySelector(JS_HOOK_INPUT_USERNAME)
+```
+
+_All in the name of readability._
 
 ### Database
 
@@ -386,7 +502,7 @@ passport.use(
 
 Validation is done on the client, but also over the server. For most validation purposes [validator](https://www.npmjs.com/package/validator) has been used. Validator is used because we only need string validation, which is the only thing validator does. Validator has been written, checked, validated and maintained by over 250 real tech-nerdy people. They can probably write those validation functions better and safer than I ever could.
 
-When a form is submitted by a user the request is send to server. The server checks if nothing fishy is going on. For instance, when someone tries to register an account, we have to check the username on character length size and if it contains only letters and numbers.
+When a form is submit by a user the request is send to server. The server checks if nothing fishy is going on. For instance, when someone tries to register an account, we have to check the username on character length size and if it contains only letters and numbers.
 
 ```javascript
 // Validate username length
@@ -408,8 +524,154 @@ We also perform this check on the client, but the checks can be altered on the c
 
 If something is wrong, an error message is returned to the user.
 
-### Build
+### Cache control
 
+Since we server-side render all of our pages we can set [Response Headers](https://developer.mozilla.org/en-US/docs/Glossary/Response_header). For the HTML files I applied the underneath headers, also with the help of [Shrinky Ray](https://www.npmjs.com/package/shrink-ray-current). Shrink Ray is used to set the Etag and to compress (only) HTML with [brotli](https://github.com/google/brotli), or [gZip](https://www.gzip.org/) as fallback.
+
+```JavaScript
+shrinkRay({
+  filter: req => req.headers['accept'].includes(['text/html']),
+}),
+```
+
+<ul>
+  <li>Cache-Control: no-cache</li>
+  <li>With Etag</li>
+  <li>No Server (if shown)</li>
+  <li>No X-Powered-By (if shown)</li>
+</ul>
+
+For static files, such as JavaScript, CSS and images, the underneath headers are set.
+
+<ul>
+  <li>Cache-Control: public, max-age=31536000</li>
+  <li>No Etag</li>
+  <li>No Last-Modified</li>
+  <li>No Server (if shown)</li>
+  <li>No X-Powered-By (if shown)</li>
+</ul>
+
+I won't go to much into detail here, since I wrote an article about it which you can find here: [The benefits of file revisioning and cache control](https://medium.com/@mennauu/the-benefits-of-file-revisioning-and-cache-control-639a9e6c537c).
+
+### Linting
+
+I use [ESLint](https://www.npmjs.com/package/eslint) and [SASS-lint](https://github.com/sasstools/sass-lint) for JavaScript and SASS. Two respectable linters, which are very adjustable to your own taste. I created some real strict rules for my linters, which I use in every (web related) project I ever make. The lint errors will show each time you save a SASS file or JavaScript file, or when building the project.
+
+Firstly, I use [Prettier](https://prettier.io/) to format my code on save. It's configured to solve most linting errors, if there are any formatting mistakes. For example, I told ESLint I don't want to have any semicolon at the end of a javascript declaration. So accordingly, I adjusted prettier to remove semicolons on save, to fix these errors.
+
+Check out my `.prettierrc` file.
+
+```JSON
+{
+  "printWidth": 100,
+  "tabWidth": 2,
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "jsxBracketSameLine": true
+}
+```
+
+My `.eslintrc.json` file.
+
+```JSON
+{
+  "plugins": ["simple-import-sort"],
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true
+    }
+  },
+  "rules": {
+    "no-console": 0,
+    "semi": 0,
+    "no-prototype-builtins": 0,
+    "import/no-unresolved": "off",
+    "simple-import-sort/sort": "warn",
+    "import/named": "off"
+  },
+  "ignorePatterns": ["build/assets/js/*.js"]
+}
+```
+
+And lastly, my `.sass-lint.yml`
+
+```SCSS
+rules:
+  space-after-colon: 0
+  force-pseudo-nesting: 0
+  hex-notation: 0
+  space-before-colon: 0
+  space-between-parens: 0
+  property-sort-order: 0
+  no-trailing-zero: 0
+  no-css-comments: 0
+  clean-import-paths: 0
+  pseudo-element: 0
+  leading-zero: 0
+  hex-length: 0
+  space-around-operator: 0
+  force-element-nesting: 0
+  mixins-before-declarations: 0
+  no-color-literals: 0
+  function-name-format: 0
+  no-vendor-prefixes: 0
+  class-name-format:
+    - 1
+    - convention: hyphenatedbem
+  indentation: 0
+  nesting-depth:
+    - 1
+    - max-depth: 4
+  no-misspelled-properties:
+    - 1
+    - 'extra-properties':
+        - 'overflow-scrolling'
+files:
+  ignore:
+    - 'node_modules/**'
+```
+
+Just to make sure, an `.editorconfig` file is also included.
+
+```
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.md]
+trim_trailing_whitespace = false
+```
+
+### Build and setup
+
+I'm pretty proud of the Setup and build overal. I could strip out the stuff created for this project and actually make a solid setup to use for new projects (including production work), that would require server-side rendering. Want to have a laugh? Check how big the `package.json` is in this project. It's **humongous**, which is fine. Most actions to create the build folder is done through the [CLI](https://nl.wikipedia.org/wiki/Command-line-interface).
+
+When I was creating the website I ran into some problems. I had to [Hard Refresh](https://refreshyourcache.com/nl/cache/) my browser every time I would update any SCSS or JavaScript files, since it would cache those files (which is a good thing, but not in this case). This is the case because your browser will simply think that your `styles.css` file is the same on refresh. We fix this by adding `revisioning`. This simply means that we will add a hash to our styles.css when we make an adjustment to our styles. So it will look something like this `styles-4598f30g.css`. The hash will be changed everytime.
 
 ## Needs testing
 
