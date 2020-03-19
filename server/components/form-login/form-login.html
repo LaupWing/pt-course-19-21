@@ -8,15 +8,15 @@
 {% set errorClass = 'form__message--has-error' if error|length %}
 {% set successClass = 'form__message--has-success' if success|length %}
 
-{% if error|length %}
+{% if error | length %}
   {% set messageText = error %}
-{% elif success|length %}
+{% elif success | length %}
   {% set messageText = success %}
 {% endif %}
 
-{% if errorClass|length %}
+{% if errorClass | length %}
   {% set messageClass = errorClass %}
-{% elif successClass|length %}
+{% elif successClass | length %}
   {% set messageClass = successClass %}
 {% endif %}
 
@@ -27,19 +27,16 @@
   title: 'Get ready'
 }) %}
 
-{% call fieldset({
-  legend: 'Login inputs',
-  sronly: true
-}) %}
+{% call fieldset({legend: 'Login inputs', sronly: true}) %}
 
-  {{ input({
+{{ input({
     name: 'username',
     id: 'username',
     label: 'Username',
     hook: 'input-username'
   }) }}
 
-  {{ input({
+{{ input({
     name: 'password',
     id: 'password',
     label: 'Password',
@@ -50,13 +47,13 @@
 
 {% endcall %}
 
-  {{ message({ 
+{{ message({ 
     text: messageText,
     hook: 'form-error',
     class: messageClass
-  }) }} 
+  }) }}
 
-  {{ button({ 
+{{ button({ 
     element: 'button',
     label: 'Log in', 
     type: 'submit',
@@ -64,7 +61,7 @@
     class: 'form__button'
   }) }}
 
-  {{ notice({ 
+{{ notice({ 
     text: 'Don`t have an account?',
     linkLabel: 'Sign up',
     url: '/register' 

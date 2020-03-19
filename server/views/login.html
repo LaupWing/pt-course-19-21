@@ -5,16 +5,12 @@
 
 {% block content %}
 
-  {% call card({
-    center: true,
-    padding: false,
-    shadow: true
-  }) %}
+  {% call card({center: true, padding: false, shadow: true}) %}
 
-    {{ image({
+  {{ image({
       image: '/assets/images/couple.jpeg',
-      srcset: '/assets/images/coupple@320w.webp 320w,
-             /assets/images/coulple@480w.webp 480w,
+      srcset: '/assets/images/couple@320w.webp 320w,
+             /assets/images/couple@480w.webp 480w,
              /assets/images/couple@768w.webp 768w,
              /assets/images/couple@1024w.webp 1024w,
              /assets/images/couple@1280w.webp 1280w,
@@ -23,7 +19,7 @@
       alt: 'Amazing couple'
     }) }}
 
-    {% include '../components/form-login/form-login.html' %}
+  {% include '../components/form-login/form-login.html' %}
 
   {% endcall %}
 

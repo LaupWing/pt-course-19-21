@@ -31,8 +31,7 @@ export const home = async (req, res) => {
           const filteredResults = results.filter(
             match => !req.user.liked.includes(match._id) && !req.user.disliked.includes(match._id),
           )
-          const persons = await filterAllData(filteredResults)
-          const possibleMatches = await Promise.all(persons)
+          const persons = filterAllData(filteredResults)
 
           const matches = await User.find({ _id: { $in: req.user.matched } }, results => results)
 
@@ -46,7 +45,7 @@ export const home = async (req, res) => {
             authenticated: true,
             firstvisit: req.user.firstVisit,
             name: req.user.name || req.user.username,
-            possibleMatches,
+            possibleMatches: persons,
             matched: matches || [],
             matcheduser: matchedUser,
             matchedavatar: matchedAvatar,

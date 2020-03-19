@@ -1,7 +1,7 @@
 {% macro fieldset(data) %}
 
     <fieldset {%- if data.class %} class="{{ data.class }}" {% endif -%}>
-        <legend {%- if data.sronly %} class="u--sr-only{% endif -%}">
+        <legend {%- if data.sronly %} class="u--sr-only" {% endif -%}>
             {{- data.legend -}}
         </legend>
 
