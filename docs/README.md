@@ -34,6 +34,13 @@ You can find a live version of the dating app here: <a href="https://project-tec
 ## Table of Contents
 
 - [Installation](#installation)
+- [Research](#research)
+  - [Benchmark](#benchmark)
+    - [User Actions](#user-actions)
+    - [User Intentions](#user-intentions)
+    - [User Search](#user-search)
+    - [User Interaction](#user-interaction)
+  - [Styleguide](#styleguide)
 - [Application](#application)
   - [Views](#views)
   - [Database](#database)
@@ -66,13 +73,13 @@ cd /~path
 3. Clone the repository (you're going to need [Git](https://www.linode.com/docs/development/version-control/how-to-install-git-on-linux-mac-and-windows/))
 
 ```bash
-git clone https://github.com/Mennauu/be-course-19-20.git
+git clone https://github.com/Mennauu/pt-course-19-20.git
 ```
 
 4. Change directory to repository in your terminal
 
 ```bash
-cd be-course-19-20
+cd pt-course-19-20
 ```
 
 5. Create a .env file in the root of the repoistory and insert underneath lines. Replace the SESSION_SECRET with a secret of your choice.
@@ -96,6 +103,85 @@ npm install
 ```bash
 npm run dev
 ```
+
+</details>
+
+## Research
+
+<details>
+  <summary>Show me this amazing research!</summary>
+
+### Benchmark
+
+#### User actions
+
+![User Actions](useractions.jpg)
+
+#### User intentions
+
+![User Intentions](userintentions.jpg)
+
+#### User search
+
+![User Search](usersearch.jpg)
+
+#### User interaction
+
+![User Interaction](userinteraction.jpg)
+
+</details>
+
+## Job story
+_When I'm on the dating website, I want to be able to create an account and get matched with other users based on my own and their preferences, so I can feel loved when someone else wants to be matched with me too._
+
+## Initial design
+
+
+### Styleguide
+
+<details>
+  <summary>Show me your styleguide!</summary>
+
+![Styleguide](styleguide.jpg)
+
+</details>
+
+### Wireframes
+
+<details>
+  <summary>Show me your wireframes!</summary>
+
+#### Landingpage
+
+![Landing page](landingpage.jpg)
+
+#### Login page
+
+![Login page](loginpage.jpg)
+
+#### Register page
+
+![Register page](registerpage.jpg)
+
+#### First visit
+
+![First visit page](firstvisitpage.jpg)
+![First visit page two](firstvisitpage2.jpg)
+![First visit page three](firstvisitpage3.jpg)
+
+#### Dashboard
+
+![Dashboard](dashboard.jpg)
+
+</details>
+
+### Wireflow
+
+<details>
+  <summary>Show me your wireflow!</summary>
+
+
+![Wireflow](wireflow.jpg)
 
 </details>
 
