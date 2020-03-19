@@ -49,7 +49,9 @@ You can find a live version of the dating app here: <a href="https://project-tec
     - [First visit](#first-visit)
     - [Dashboard](#dashboard)
 - [Application](#application)
-  - [Views](#views)
+  - [Templating](#templating)
+    - [Views](#views)
+    - [Components](#components)
   - [Database](#database)
     - [Setup](#setup)
     - [Table example](#table-example)
@@ -195,18 +197,81 @@ HTMLovers is a server-side rendered dating web application. You can create an ac
 
 HTMLovers is created using mainly HTML, SCSS, JavaScript, Nunjucks, NodeJS, Express and MongoDB.
 
-### Views
+### Templating
 
-[Nunjucks](https://mozilla.github.io/nunjucks/) is used as a templating engine to render HTML. Nunjucks has been chosen for its easy way of creating macro's, so building component based views is made better, cleaner, easier and above all, more readable. Check out the "notification" component underneath, written as a macro. 
+[Nunjucks](https://mozilla.github.io/nunjucks/) is used as a templating engine to render HTML. Nunjucks has been chosen for its easy way of creating macro's, so building component based views is made better, cleaner, easier and above all, more readable. 
 
-```handlebars
+#### Views
+
+One default layout has been created for every page on the website. The content from the different pages are injected within a `block content`. It might be the case that you have a _generic_ element that's shown on every page. Look at the code below for a small example, a generic element in this project is a header.
+
+```HTML
+<!DOCTYPE html>
+<html>
+  <head>...</head>
+  <body>
+    <!-- The header is a 'generic' element in this project because it's shown on every page -->
+    {% call header({
+      class: headerClass
+    }) %}
+
+      {% include 'components/navigation/navigation.html' %}
+
+    {% endcall %}
+    <main>
+      {% block content %}
+        <!-- content will be injected in this block -->
+      {% endblock %}
+    </main>
+  </body>
+</html>
+```
+
+When you want to inject content into the 'block' you have to extend the layout. You can do that like this: 
+
+```
+{% extends 'default.html' %}
+
+{% block content %}
+  
+{% endblock %}
+```
+
+For instance, this might be how your `home.html` looks.
+
+```
+{% from '/components/card/card.html' import card %}
+{% from '/components/image/image.html' import image %}
+
+{% extends 'default.html' %}
+
+{% block content %}
+
+  {% call card({ 
+    shadow: true ,
+    title: 'Hello, this is just an example'
+  }) %}
+
+    {{ image({
+      image: '/assets/images/test.jpeg',
+      alt: 'Test'
+    }) }}
+
+  {% endcall %}
+
+{% endblock %}
+```
+
+
+#### Components
+As you might have seen in the `views` sections, I'm not actually writing any HTML. I'm calling elements like a header, card and image and providing them information. How does that work? Check out the "notification" component underneath, written as a macro. 
+
+```HTML
 {% macro notification(data) %}
 
-  <div class="c-notification 
-        {%- if data.class %} {{ data.class }}{% endif -%}" 
-        js-hook-notification>
+  <div class="c-notification {%- if data.class %} {{ data.class }}{% endif -%}" js-hook-notification>
 
-      <p class="notification__message" js-hook-notification-message>
+      <p class="notification__message">
 
         {%- if data.message %}{{ data.message }}{% endif -%}
 
@@ -217,13 +282,15 @@ HTMLovers is created using mainly HTML, SCSS, JavaScript, Nunjucks, NodeJS, Expr
 {% endmacro %}
 ```
 
+I'm defining a macro called notification that contains data. Within the macro I write some HTML which defines the macro. The data within the `if` statements are only shown if you provide the macro with the given data (by name). See that `js-hook-notification`? That's added to call the element in JavaScript, so we don't get messy stuff like searching for a class named notification.
+
 In our view template we can now easily call the macro by importing it like this at the top of the view file:
 
 ```javascript
 {% from '/components/notification/notification.html' import notification %}
 ```
 
-Afterwards, we can call the macro:
+Afterwards, we can call the macro within our view.
 
 ```javascript
  {{ notification({ 
@@ -232,9 +299,15 @@ Afterwards, we can call the macro:
  }) }}
 ```
 
-Now if we don't want to render a class, we can just leave it empty or not mention it at all.
+Now if we don't want to render a class, we can just leave it empty or not mention it at all. The if statement within the macro will be false.
 
-Building macros like this makes them reusable.
+**How does a component folder look like?**
+
+In my case it looks like this:
+
+
+
+Building macros like this makes them reusable. You can reuse them anywere on your site, and also someone else that might start to code within your project. Heck, you can even use the component in different projects.
 
 ### Database
 
