@@ -324,6 +324,9 @@ Building components/macros like this makes them reusable. You can reuse them any
 
 Let's take a look again at the `notification` component. It has a SCSS file named _notification.scss. The underscore is a partial for SCSS. It basically means that the file is going to be imported to a `main` stylesheet, in my case `main.scss`. The advantage of using partials is that you can use many files to organize your code and everything will be compiled within a single file. Back to the notifcation..
 
+<details>
+  <summary>Show me your _notication.scss file!</summary>
+
 ```SCSS
 $notification-transition-speed: 400ms;
 $notification-z-index: 10;
@@ -364,6 +367,9 @@ $notification-weight:  $font-weight-bold;
   transition: visibility $notification-transition-speed, opacity $notification-transition-speed;
 }
 ```
+
+</details>
+<br>
 
 As you can see at the top of the files we define a lot of variables. We do this in order to make the component reusable within different projects. For instance, if you use this component within another project, the only thing (in most cases) you will have to do is give values to the variables on top. You don't have to touch the code beneath the variables.
 
@@ -566,6 +572,9 @@ I use [ESLint](https://www.npmjs.com/package/eslint) and [SASS-lint](https://git
 
 Firstly, I use [Prettier](https://prettier.io/) to format my code on save. It's configured to solve most linting errors, if there are any formatting mistakes. For example, I told ESLint I don't want to have any semicolon at the end of a javascript declaration. So accordingly, I adjusted prettier to remove semicolons on save, to fix these errors.
 
+<details>
+  <summary>Show me your linter and prettier files!</summary>
+
 Check out my `.prettierrc` file.
 
 ```JSON
@@ -673,6 +682,8 @@ insert_final_newline = true
 [*.md]
 trim_trailing_whitespace = false
 ```
+
+</details>
 
 ### Build and setup
 
