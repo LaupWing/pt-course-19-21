@@ -34,13 +34,20 @@ You can find a live version of the dating app here: <a href="https://project-tec
 ## Table of Contents
 
 - [Installation](#installation)
-- [Research](#research)
-  - [Benchmark](#benchmark)
-    - [User Actions](#user-actions)
-    - [User Intentions](#user-intentions)
-    - [User Search](#user-search)
-    - [User Interaction](#user-interaction)
+- [Design Patterns Research](#design-patterns-research)
+  - [User Actions](#user-actions)
+  - [User Intentions](#user-intentions)
+  - [User Search](#user-search)
+  - [User Interaction](#user-interaction)
+- [Job Story](#job-story)
+- [Initial design](#initial-design)
   - [Styleguide](#styleguide)
+  - [Wireframes](#wireframes)
+    - [Landingpage](#landingpage)
+    - [Login page](#login-page)
+    - [Register page](#register-page)
+    - [First visit](#first-visit)
+    - [Dashboard](#dashboard)
 - [Application](#application)
   - [Views](#views)
   - [Database](#database)
@@ -106,26 +113,24 @@ npm run dev
 
 </details>
 
-## Research
+## Design patterns research
 
 <details>
   <summary>Show me this amazing research!</summary>
 
-### Benchmark
-
-#### User actions
+### User actions
 
 ![User Actions](useractions.jpg)
 
-#### User intentions
+### User intentions
 
 ![User Intentions](userintentions.jpg)
 
-#### User search
+### User search
 
 ![User Search](usersearch.jpg)
 
-#### User interaction
+### User interaction
 
 ![User Interaction](userinteraction.jpg)
 
@@ -135,7 +140,6 @@ npm run dev
 _When I'm on the dating website, I want to be able to create an account and get matched with other users based on my own and their preferences, so I can feel loved when someone else wants to be matched with me too._
 
 ## Initial design
-
 
 ### Styleguide
 
@@ -234,11 +238,11 @@ Building macros like this makes them reusable.
 
 ### Database
 
-In order to create accounts, save account details and be able to match with other users, we need a **database**. The project is made using JavaScript, NodeJS and Express; [mongoDB](https://www.mongodb.com/) is a perfect database when using these tools, because MongoDB is a document database, which means it stores data in JSON-like documents. [Mongoose](https://mongoosejs.com/) is used as a boilerplate.
+In order to create accounts, save account details and be able to match with other users, we need a **database**. The project is made using JavaScript, NodeJS and Express; [mongoDB](https://www.mongodb.com/) is a perfect database when using these tools, because MongoDB is a document database, which means it stores data in JSON-like documents. [Mongoose](https://mongoosejs.com/) is used as a boilerplate in order to make life a little easier.
 
 #### Setup
 
-_Short disclaimer: passwords are hashed with [bcrypt](https://www.npmjs.com/package/bcrypt)._
+_Disclaimer: passwords are hashed with [bcrypt](https://www.npmjs.com/package/bcrypt). bcrypt is used since it has proven to be a realiable encryption method, also passport (which we use for authentication) has an easy integration flow for bcrypt._
 
 <details>
   <summary>Show me the database connection setup and user schema</summary>
@@ -307,7 +311,7 @@ passport.use(
 
 ### Validation
 
-Validation is done on the client, but also over the server. For most validation purposes [validator](https://www.npmjs.com/package/validator) has been used.
+Validation is done on the client, but also over the server. For most validation purposes [validator](https://www.npmjs.com/package/validator) has been used. Validator is used because we only need string validation, which is the only thing validator does. Validator has been written, checked, validated and maintained by over 250 real tech-nerdy people. They can probably write those validation functions better and safer than I ever could.
 
 When a form is submitted by a user the request is send to server. The server checks if nothing fishy is going on. For instance, when someone tries to register an account, we have to check the username on character length size and if it contains only letters and numbers.
 
@@ -320,16 +324,19 @@ if (!validator.isByteLength(username, { min: 3, max: 20 })) {
 }
 
 // Check if username contains only letters and numbers
-  if (!validator.isAlphanumeric(username)) {
-    req.flash('error', message.usernameCheck)
+if (!validator.isAlphanumeric(username)) {
+  req.flash('error', message.usernameCheck)
 
-    return res.redirect('back')
-  }
+  return res.redirect('back')
+}
 ```
 
 We also perform this check on the client, but the checks can be altered on the client. They can't adjust validation on the server, which is the reason why it's important to always (also) validate requests on the server.
 
 If something is wrong, an error message is returned to the user.
+
+### Build
+
 
 ## Needs testing
 
