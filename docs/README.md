@@ -691,7 +691,7 @@ trim_trailing_whitespace = false
 
 </details>
 
-### Build and setup
+### Setup and Build
 
 _I could strip out the stuff created for this project and actually make a solid setup to use for new projects (including production work), that would require server-side rendering. Want to have a laugh? Check how big the `package.json` is in this project. It's **humongous**, which is fine. Most actions to create the build folder is done through the [CLI](https://nl.wikipedia.org/wiki/Command-line-interface)._
 
