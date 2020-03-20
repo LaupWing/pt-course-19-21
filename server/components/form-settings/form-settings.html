@@ -22,10 +22,7 @@
   subtitle: 'Since this is your first time visiting you have to fill in some information.'
 }) %}
 
-{% call fieldset({
-  legend: 'Main personal information',
-  sronly: true
-}) %}
+{% call fieldset({ legend: 'Main personal information', sronly: true }) %}
 
   {{ input({
     name: 'name',
@@ -95,10 +92,7 @@
 
 {% endcall %}
 
-{% call fieldset({
-  legend: 'Type of person you are looking for',
-  sronly: true
-}) %}
+{% call fieldset({ legend: 'Type of person you are looking for', sronly: true }) %}
 
   {% call radioWrapper({
     label: "Who are you looking for?",
@@ -145,10 +139,7 @@
 
 {% endcall %}
 
-{% call fieldset({
-  legend: 'Secondary personal information',
-  sronly: true
-}) %}
+{% call fieldset({ legend: 'Secondary personal information', sronly: true }) %}
 
   {{ upload({
     name: 'avatar',

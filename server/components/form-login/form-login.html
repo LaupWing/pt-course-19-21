@@ -27,7 +27,10 @@
   title: 'Get ready'
 }) %}
 
-{% call fieldset({legend: 'Login inputs', sronly: true}) %}
+{% call fieldset({
+  legend: 'Login inputs', 
+  sronly: true
+}) %}
 
 {{ input({
     name: 'username',
