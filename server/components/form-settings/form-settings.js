@@ -48,16 +48,16 @@ class FormSettings {
     this.inputRanges = [this.inputRangeFrom, this.inputRangeTo]
     this.formItems = [...element.querySelectorAll('.' + CLASS_FORM_ITEM)]
 
-    this.nextButton = element.querySelector(JS_HOOK_NEXT_BUTTON)
-    this.submitButton = element.querySelector(JS_HOOK_SUBMIT_BUTTON)
+    this.nextButton = document.querySelector(JS_HOOK_NEXT_BUTTON)
+    this.submitButton = document.querySelector(JS_HOOK_SUBMIT_BUTTON)
 
     this.initialLoadEvents()
     this.bindEvents()
   }
 
   initialLoadEvents() {
-    this.submitButton.classList.add(CLASS_UTILITY_IS_INVISIBLE)
     this.nextButton.classList.remove(CLASS_UTILITY_IS_INVISIBLE)
+    this.submitButton.classList.add(CLASS_UTILITY_IS_INVISIBLE)
     this.pe.classList.remove(CLASS_FORM_PE)
 
     this.inputRangeFrom.setAttribute('readonly', '')
