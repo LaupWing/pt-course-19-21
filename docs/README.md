@@ -70,6 +70,19 @@ You can find a live version of the dating app here: <a href="https://project-tec
       - [Images](#images)
       - [CSS](#css)
       - [JavaScript](#javascript)
+      - [Compression](#compression)
+        - [Pre-compression](#pre-compression)
+        - [Serve assets](#serve-assets)
+        - [Result comparison](#result-comparison)
+- [Progressive Enhancement](#progressive-enhancement)
+  - [Functional layer](#functional-layer)
+  - [Usable layer](#usable-layer)
+  - [Pleasureable layer](#pleasureable-layer)
+- [Scope, Context, Closure and Hoisting](#scope-context-closure-and-hoisting)
+  - [Scope](#scope)
+  - [Context](#context)
+  - [Closure](#closure)
+  - [Hoisting](#hoisting)
 - [Needs testing](#needs-testing)
 - [Known bugs](#known-bugs)
 - [Wishlist](#wishlist)
@@ -932,6 +945,128 @@ The browser that support modules will just ignore the file with the nomodule att
 - [Alias](https://www.npmjs.com/package/@rollup/plugin-alias) to define aliases for file imports
 
 Note: with JavaScript we do the same revisioning and filename replacement as we did for CSS.
+
+#### Compression
+
+_Instead of compressing assets [on the fly](https://whatis.techtarget.com/definition/on-the-fly), I decided to pre-compress assets with [Brotli](https://brotli.org/) and [GZIP](https://www.gzip.org/) and write a middleware function that will serve the compressed files. HTML is compressed on the fly._
+
+Only HTML is compressed on the fly. Because it's server-side rendered, we can't actually pre-compress it. 
+
+[Shrink Ray Current](https://www.npmjs.com/package/shrink-ray-current) is used to compress only the HTML. Why? Because it compresses to `Brotli` and if it's not supported it automatically compresses to `GZIP`. That's exactly what we want. 
+
+By default Shrink Ray Current compresses all assets, so we have to change that to only HTML. We can do that by adding a filter to only compress files that include the `text/html` [Content Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type).
+
+```JavaScript
+app.use(
+  shrinkRay({
+    filter: req => req.headers['accept'].includes(['text/html'])
+  })
+)
+```
+
+That's it! Shrink Ray Current takes care of the rest.
+
+#### Pre-compression
+
+There are many packages out there that allow for pre-compression, like [Compress Brotli](https://www.npmjs.com/package/compress-brotli), [gZipper](https://www.npmjs.com/package/gzipper), [Node GZIP](https://www.npmjs.com/package/node-gzip), [Compression](https://www.npmjs.com/package/compression), but I used [Bread Compressor CLI](https://www.npmjs.com/package/bread-compressor-cli).
+
+You might be wondering why...
+
+_**`Compress Brotli:`**_ Only has support for `Brotli` compression and that's a problem since [brotli isn't supported on all browsers](https://caniuse.com/#feat=brotli) and not all servers support `Brotli` encoding headers. We need `GZIP` as a fallback.
+
+_**`Node GZIP:`**_ Doesn't support `Brotli` compression
+
+_**`Compression:`**_ Doesn't support `Brotli` compression
+
+_**`gZipper:`**_ Has everything I want; `Brotli` and `GZIP` compression and `CLI` support. The small downside is that you have to run 2 separate commands in order to compress assets to `Brotli` and `GZIP`. Also, [gZipper](https://www.npmjs.com/package/gzipper) is harder to configure than [Bread Compressor CLI](https://www.npmjs.com/package/bread-compressor-cli).
+
+_**`Bread Compressor CLI:`**_ Has everything I need, out of the box. In order to compress all JavaScript assets to `Brotli` and `GZIP` you only have to run one command in the `CLI`: `bread-compressor 'build/assets/js/*.js'`. The same is applied to CSS assets: `bread-compressor 'build/assets/css/*.css'`. Winner!
+
+After compressing the files look like this:
+
+<img src="https://webgaan.nl/images/build.png" alt="Build" width="250" />
+
+
+#### Serve assets
+
+I wrote a middleware function that allows us to serve the compressed assets, since this doesn't happen automatically. 
+
+In the server file, `server.js`, I added the line underneath.
+
+```JavaScript
+app.get(['*.js', '*.css'], serve.serveContentTypes)
+```
+
+It sends all served CSS and JavaScript files to the declared function `serveContentTypes`, which is exported nicely from `serve.js` that's placed in the `middleware` folder.
+
+```JavaScript
+exports.serveContentTypes = (req, res, next) => {
+   ...
+}
+```
+
+First we have to check the accepted [encoding headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding), because we have to know if `Brotli` and `GZIP` are supported.
+
+```JavaScript
+const encoding = req.headers['accept-encoding']
+```
+
+Most of the time `encondig` will result in `gzip, deflate, br`. `br` is short for `Brotli`.
+
+After that we check the extension of the given files, so we can later set the correct [Content Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type).
+
+```JavaScript
+const extensionIndex = req.originalUrl.lastIndexOf('.')
+const extension = req.originalUrl.slice(extensionIndex)
+```
+
+`extension` will result in `.js` or `.css`.
+
+Now we check if `Brotli` or `GZIP` are supported. `Brotli` files have priority, they will be served if supported, otherwise `GZIP` files. If neither are supported (which is unlikely nowadays), the regular file will be served.
+
+```JavaScript
+if (encoding && encoding.includes('br')) {
+  req.url = `${req.url}.br`
+  res.set('Content-Encoding', 'br')
+} else if (encoding && encoding.includes('gzip')) {
+  req.url = `${req.url}.gz`
+  res.set('Content-Encoding', 'gzip')
+}
+
+```
+The request URL is set with the compressed file extension `.br` or `.gz`. Afterwards the [Content Encoding](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding) header is set.
+
+Lastly we set the [Content Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) for the given extension.
+
+```JavaScript
+res.set('Content-Type', extension === '.js' ? 'text/javascript' : 'text/css')
+```
+
+The full code looks like this:
+
+```javascript
+exports.serveContentTypes = (req, res, next) => {
+  const encoding = req.headers['accept-encoding']
+  const extensionIndex = req.originalUrl.lastIndexOf('.')
+  const extension = req.originalUrl.slice(extensionIndex)
+
+  if (encoding && encoding.includes('br')) {
+    req.url = `${req.url}.br`
+    res.set('Content-Encoding', 'br')
+  } else if (encoding && encoding.includes('gzip')) {
+    req.url = `${req.url}.gz`
+    res.set('Content-Encoding', 'gzip')
+  }
+
+  res.set('Content-Type', extension === '.js' ? 'text/javascript' : 'text/css')
+  next()
+}
+```
+
+##### Results comparison
+
+![Compression bar chart](https://github.com/Mennauu/pt-team-19-20/blob/development/docs/compression-chart.png?raw=true)
+
 
 ## Progressive Enhancement
 
