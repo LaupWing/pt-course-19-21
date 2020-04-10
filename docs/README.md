@@ -1029,7 +1029,7 @@ Also, with JavaScript we hide the 'Choose file' button, and place our own.
 
 ### Scope
 
-Within JavaScript there are 3 scopes called the `Global scope`, `Local scope` and `Static scope`. A `static scope` is also referred to as a `lexical scope`, but I just hate that word so I prefer `static`. 
+Within JavaScript there are scopes called: the `Global scope` and `Local scope`.
 
 #### Global scope
 
@@ -1073,14 +1073,107 @@ disableButton(element) {
   console.log(elementLength) // returns undefined
 }
 ```
-#### Static scope
-Static scopes are weird to explain. Let's just say that they are variables that are defined in a function within a function.
 
 ### Context
 
+Context refers to the value of `this`. [The value of this is determined by how a function is called](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this), but if you refer to this outside of any function, `this` refers to the [global object](https://developer.mozilla.org/en-US/docs/Glossary/Global_object) (the [window](https://developer.mozilla.org/en-US/docs/Web/API/Window) object in browsers).
+
+Lets create and take a look at some examples.
+
+1. This example logs the `Window object`, because the value of `this` is not set. However, in [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) the example logs `undefined`.
+
+```JavaScript
+function meaningLessFunction() {
+  console.log(this)
+}
+
+meaningLessFunction()
+```
+
+2. This example also logs the `Window object`, [because arrow functions do not bind their own `this`](https://www.codementor.io/@dariogarciamoya/understanding-this-in-javascript-with-arrow-functions-gcpjwfyuc). They inherit `this` from the parent scope, in this case the global scope.
+
+```JavaScript
+const meaningLessFunction = () => {
+  console.log(this)
+}
+
+meaningLessFunction()
+```
+
+3. This example logs an object in which name and age are defined, since they are binded to `this`.
+
+```JavaScript
+class FormSettings {
+  constructor(name) {
+    this.name = name
+    this.age = age
+    
+    console.log(this)
+  }
+}
+
+new FormSettings('Menno', 25)
+```
+
+The third example is what I use a lot in this project.
+
 ### Closure
 
+A closure is a function that has access to and remembers variables from another function (and variables defined in the global scope); a function within a function. The inner function is called the closure.
+
+The inner function has access to the variables from the outer function, but not vice versa (this is called `Lexical Scoping`)
+
+Lets take a look at an example.
+
+```JavaScript
+function formatString(value) {
+
+  function upperCaseString() {
+     console.log(value.toUpperCase())
+  }
+
+  upperCaseString()
+}
+
+formatString('Hi, my name is Menno')
+```
+
+The inner function (closure) `upperCaseString` has access to `value`, hence `HI, MY NAME IS MENNO` is printed.
+
+
 ### Hoisting
+
+`Hoisting` means that all declarations are automatically moved to the top of the scope in which the declaration is in. Because of this behaviour you can use variables or functions before they are declared.
+
+This works.
+
+```JavaScript
+const name = 'menno'
+
+function upperCaseString(value) {
+  return value.toUpperCase()
+}
+
+const nameUppercased = upperCaseString(name)
+
+console.log(nameUppercased) // MENNO
+```
+
+This also works.
+
+```JavaScript
+const name = 'menno'
+const nameUppercased = upperCaseString(name)
+
+console.log(nameUppercased) // MENNO
+
+function upperCaseString(value) {
+  return value.toUpperCase()
+}
+```
+
+A good practice is to always define variables at the top of the scope, if possible.
+
 
 ## Needs testing
 
