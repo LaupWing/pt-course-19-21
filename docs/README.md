@@ -392,7 +392,7 @@ Variables like `$global-spacing` and `$color-red` are globally defined variables
 All SCSS files are eventually compiled to one css file, which is compressed, revisioned, and minified, on save or build. More about that later!
 
 ### JavaScript
-I don't want to explain what JavaScript is, but I want to explain how I use JavaScript in this project. All JavaScript (files) being used are imported in a `main-es.js` file, like this:
+How is JavaScript used in the project? JavaScript files being used are imported in a `main-es.js` file, like this:
 
 ```JavaScript
 import FormLogin from '@components/form-login'
@@ -405,7 +405,7 @@ I want to talk about the moduleInit, that's being imported. It's a script I didn
 moduleInit.sync('[js-hook-form-login]', FormLogin)
 ```
 
-It will look for an element in the DOM with a data-attribute called `js-hook-form-login`. If an element has been found it will create a new Class, like: `new Class(FormLogin)`.
+It will look for an element in the DOM with a data-attribute called `js-hook-form-login`. If an element has been found it will create a new Class, kind of like: `new Class(FormLogin)`.
 
 In the `FormLogin` javascript file it will look like the code underneath. We can call the element directly from the constructor.
 
@@ -427,22 +427,22 @@ class FormLogin {
 
 Another note: all HTML element that contain some JavaScript actions are called by a data-attribute called js-hook followed by the name of the element. For instance, `js-hook-input-username`.
 
-In a JavaScript file at the top I will create a variable like this.
+In a JavaScript file at the top a variable is defined like this:
 
 ```javascript
 const JS_HOOK_INPUT_USERNAME = '[js-hook-input-username]'
 ```
 
-To be able to find the element I can now do something in the likes of this
+To be able to find the element you can now do something in the likes of this:
 ```javascript
 const inputUsername = document.querySelector(JS_HOOK_INPUT_USERNAME)
 
-// Maybe I'm calling a input inside a form that's been called by ModuleInit? 
+// Maybe I'm calling an input inside a form that's been called by ModuleInit? 
 // We can find an element by adding the line underneath in the constructor.
 this.inputUsername = element.querySelector(JS_HOOK_INPUT_USERNAME)
 ```
 
-_All in the name of readability._
+_This is all done in the name of readability, I love it._
 
 ### Database
 
@@ -693,9 +693,7 @@ trim_trailing_whitespace = false
 
 ### Setup and Build
 
-_I could strip out the stuff created for this project and actually make a solid setup to use for new projects (including production work), that would require server-side rendering. Want to have a laugh? Check how big the `package.json` is in this project. It's **humongous**, which is fine. Most actions to create the build folder is done through the [CLI](https://nl.wikipedia.org/wiki/Command-line-interface)._
-
-Note: I was experimenting a lot with performance, so in the end I just decided to create a build folder for static files.
+I was experimenting with performance, so in the end I just decided to create a build folder for static files.
 
 #### Setup
 The most obvious thing first, [Express](https://www.npmjs.com/package/express) for the server. It's just one of the best frameworks for node. I love writing imports in order to require modules, so I included [ESM](https://www.npmjs.com/package/esm) right away, ESM is a ECMAScript module loader and it allows you to write imports like this:
@@ -933,7 +931,156 @@ The browser that support modules will just ignore the file with the nomodule att
 - [Prettier](https://www.npmjs.com/package/rollup-plugin-babel) to run prettier (formating) on the final bundle
 - [Alias](https://www.npmjs.com/package/@rollup/plugin-alias) to define aliases for file imports
 
-With JavaScript we do the same revisioning and filename replacement as we did for CSS, so another explanation is not needed.
+Note: with JavaScript we do the same revisioning and filename replacement as we did for CSS.
+
+## Progressive Enhancement
+
+Progressive Enhancement (PE) is a strategy for creation in Web Development; you as a developer make sure that the core functionality of your application/website is accessible in any kind of browser. If the user has access to `enhancements` like CSS or JavaScript, the user is rewarded with a better experience. Using a modern browser? Better experience.
+
+I like to define PE in 3 layers:
+
+ - Functional
+ - Usable
+ - Pleasureable
+
+### Functional Layer
+This layer defines the core functionality of your application. To showcase this I disabled CSS and JavaScript in this project. Let's see how the `first visit` page looks on a desktop sized resolution. This is the page that is shown after registering your account.
+
+![Functional layer](pe-1.png)
+
+The core functionality is to acquire information of the newly registered user. The user *has* to fill in the form, completely; which is possible without the use of CSS or JavaScript. It doesn't even look that bad if I say so myself. 
+
+This is all possible by writing semantic HTML and in this case by implementing form validation on the server. Let's say you click on `submit and start journey` without filling in any of the fields. Validation will take place on the server and returns an appropiate error message.
+
+![Functional layer 2](pe-2.png)
+
+This comes with the downside that the page refreshes when submitting the form. You (as a user) might lose some already filled in information, and no one likes to re-fill all fields again; it's unpleasant. You see what I did there? Making use of the word unpleasant. If you had JavaScript support and enabled, we can make the experience way more pleasant (pleasureable layer) by not refreshing the page on submit.
+
+### Usable layer
+Having CSS and JavaScript disabled makes the user experience pretty bad. You can do your best by writing Semantic HTML, but even then it's not all that great. Luckily, nearly all browsers have basic CSS support. 
+
+Let's include the CSS file and see how it looks (I filled in the form so we can compare it with the pleasureable layer).
+
+![Usable layer](pe-3.png)
+
+That's way, way, way, way better! Users won't be scratching their heads anymore; the user experience is enriched. Though, it can still be improved by a lot.
+
+Note: I mentioned `basic` css support. Which is important. There are many CSS features that aren't supported in all browsers. You could say that they are part of the `pleasureable layer`.
+
+### Pleasureable Layer
+Using a modern browser? You have JavaScript enabled? Your internet connection doesn't suck? Welcome to the Pleasureable layer. The layer with the best user experience.
+
+We have access to many amazing CSS features. Some examples are:
+
+- `display: grid` and `display: flex`
+- `animation` and `transition`
+-  Any kind of `gradient`
+
+Though, using these kind of features shouldn't make the website `unusable` if they aren't supported. Fallbacks should be applied where necessary. Like the example below.
+
+```CSS
+background: #e5e5e5; /* fallback */
+background: radial-gradient(ellipse at center, #e5e5e5 39%, #cacaca 100%);
+```
+
+If the browser doesn't support radial-gradient, it will just ignore it. The `fallback` will be applied.
+
+In the pleasureable layer we also have access to client-side JavaScript, woop woop! But again, you should take into accountant that not all browser support certain functions or code, for instance:
+
+```JavaScript 
+const data = () => { ... } // Arrow function
+
+function data() { ... } // Regular function
+```
+
+The arrow function will not work in any version of `Internet Explorer`. So it's wise to write `regular functions`, or like in my case, use [Babel](https://babeljs.io/) to compile 'modern' code to code with better support accross all browsers. 
+
+Let's enable JavaScript in the project and see how it looks.
+
+![pleasureable layer](pe-4.png)
+
+Is that all? Yes! If JavaScript is enabled we make the user fill in the form based on [Progressive Disclosure](https://www.interaction-design.org/literature/topics/progressive-disclosure). As you can see there is a new `button` called `Next`. This button is disabled though. It will be clickable once the user has filled in the first input (name). If the button is clicked, the next question will be visible, and the browser will automatically scroll to the next question.
+
+![pleasureable layer 2](pe-5.png)
+
+Other than what was already mentioned above, we made two major pleasureable adjustments to the form.
+
+**1. Age range inputs to slider**
+
+If JavaScript is enabled the age range is changed to a slider, instead of being two number inputs that the user has to fill in.
+
+| Functional  | Usable | Pleasureable |
+| ----------- | ------ | ------------ |
+| ![range slider functional](pe-6.png) | ![range slider usable](pe-7.png) | ![range slider pleasureable](pe-8.png) | 
+
+**2. Image preview**
+
+If JavaScript is enabled we can show a preview of the (pre)uploaded image.
+
+| Functional  | Usable | Pleasureable |
+| ----------- | ------ | ------------ |
+| ![image functional](pe-9.png) | ![image usable](pe-10.png) | ![image pleasureable](pe-11.png) | 
+
+Also, with JavaScript we hide the 'Choose file' button, and place our own.
+
+ <img src="./pe-12.png" alt="Image button upload" height="120">
+
+## Scope, Context, Closure and Hoisting
+
+### Scope
+
+Within JavaScript there are 3 scopes called the `Global scope`, `Local scope` and `Static scope`. A `static scope` is also referred to as a `lexical scope`, but I just hate that word so I prefer `static`. 
+
+#### Global scope
+
+Variables outside a function are `Global scoped`. `Global scoped` variables are usually defined at the top of the file. To take an example in this project, we take a look at the `form-settings.js`.
+
+At the top of the file there are imports and afterwards some `Global scoped` variables. For instance:
+
+```JavaScript
+const JS_HOOK_NEXT_BUTTON = '[js-hook-next-button]'
+```
+
+`JS_HOOK_NEXT_BUTTON` is now usable throughout the entire file, in all functions. In my case used like underneath within the constructor.
+
+```JavaScript
+constructor() {
+  ...
+
+  this.nextButton = document.querySelector(JS_HOOK_NEXT_BUTTON)
+}
+```
+
+#### Local scope
+Variables inside a function are `Local scoped`. These variables will be undefined if you try to access them while outside the function.
+
+For example:
+
+```JavaScript
+enableButton(element) {
+  const elementLength = element.srcElement.value.length
+
+  if (elementLength < 2 && !this.nextButton.hasAttribute('disabled')) {
+    this.disableButton()
+  }
+}
+```
+
+`elementLength` is accessible within the function `enableButton`, and nowhere else.
+
+```JavaScript
+disableButton(element) {
+  console.log(elementLength) // returns undefined
+}
+```
+#### Static scope
+Static scopes are weird to explain. Let's just say that they are variables that are defined in a function within a function.
+
+### Context
+
+### Closure
+
+### Hoisting
 
 ## Needs testing
 
@@ -958,6 +1105,7 @@ With JavaScript we do the same revisioning and filename replacement as we did fo
 ## Credits
 
 **Dept**: I stole their SASS grid and Javascript ModuleInit.
+**Folkert**: For feedback!
 
 ## Sources
 
